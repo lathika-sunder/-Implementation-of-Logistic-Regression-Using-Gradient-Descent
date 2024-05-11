@@ -1,108 +1,81 @@
-# Implementation-of-Logistic-Regression-Using-Gradient-Descent
-# AIM:
+## Implementation-of-Logistic-Regression-Using-Gradient-Descent
+### DATE:05.03.2024
+
+### AIM:
 To write a program to implement the the Logistic Regression Using Gradient Descent.
 
-## Equipments Required:
+### Equipments Required:
 1. Hardware – PCs
-2. Anaconda – Python 3.7 Installation / Moodle-Code Runner
+2. Anaconda – Python 3.7 Installation / Jupyter notebook
 
-## Algorithm
-   1. Read the given dataset.
-   2. Fitting the dataset into the training set and test set.
-   3. Applying the feature scaling method.
-   4. Fitting the logistic regression into the training set.
-   5. Prediction of the test and result
-   6. Making the confusion matrix
-   7. Visualizing the training set results.
+### Algorithm
+1. Import the necessary python packages
+2. Read the dataset.
+3. Define X and Y array.
+4. Define a function for costFunction,cost and gradient.
+5. Define a function to plot the decision boundary and predict the Regression value
 
-## Program:
-~~~
-/*
+
+### Program:
+```
 Program to implement the the Logistic Regression Using Gradient Descent.
 Developed by: Lathika Sunder
 RegisterNumber:  212221230054
-*/
-
-import numpy as np
-import matplotlib.pyplot as plt
+```
+```python
 import pandas as pd
-df = pd.read_csv("Social_Network_Ads(1).csv")
-x = df.iloc[:, [2,3]].values
-y = df.iloc[:, 4].values
-
-#fitting the dataset into the training set and test set
-from sklearn.model_selection import train_test_split
-x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = 0.25,random_state=0)
-
-#feature scaling
-from sklearn.preprocessing import StandardScaler
-st_x = StandardScaler()
-st_x
-
-x_train = st_x.fit_transform(x_train)
-x_test = st_x.transform(x_test)
-
-#fitting the logistic regression into the training set
-from sklearn.linear_model import LogisticRegression
-classifier = LogisticRegression(random_state=0)
-classifier.fit(x_train,y_train)
-
-#prediction the test and result
-Y_pred = classifier.predict(x_test)
-Y_pred
-
-#Making the confusion matrix
-from sklearn.metrics import confusion_matrix
-cm = confusion_matrix(y_test,Y_pred)
-cm
-
-from sklearn import metrics
-accuracy = metrics.accuracy_score(y_test,Y_pred)
-accuracy
-
-recall_sensitivity = metrics.recall_score(y_test,Y_pred,pos_label=1)
-recall_specificity = metrics.recall_score(y_test,Y_pred,pos_label=0)
-recall_sensitivity, recall_specificity
-
-#visualizing the training set results
-from matplotlib.colors import ListedColormap
-x_set,y_set = x_train,y_train
-x1,x2=np.meshgrid(np.arange(start = x_set[:,0].min()-1, stop=x_set[:,0].max()+1,step=0.01),
-                  np.arange(start = x_set[:,1].min()-1, stop=x_set[:,1].max()+1,step=0.01))
-
-plt.contourf(x1,x2,classifier.predict(np.array([x1.ravel(),x2.ravel()]).T).reshape(x1.shape),alpha=0.75,cmap=ListedColormap(('red','green')))
-plt.xlim(x1.min(),x2.max())
-plt.ylim(x2.min(),x2.max())
-for i,j in enumerate(np.unique(y_set)):
-    plt.scatter(x_set[y_set == j,0],x_set[y_set==j,1],
-                c=ListedColormap(('red','green'))(i),label=j)
-plt.title('Logistic Regression(training set)')
-plt.xlabel("Age")
-plt.ylabel("Estimated Salary")
-plt.legend()
-plt.show()
-~~~
-## Output:
-
-Prediction of Test Result:
-
-![logistic regression using gradient descent](prediction.png)
-Confusion Matrix:
-
-
-![logistic regression using gradient descent](arrayex4.png)
-
-Accuracy:
-
-![logistic regression using gradient descent](acc.png)
-
-Recalling Sensitivity and Specificity:
-
-![logistic regression using gradient descent](sens.png)
-
-Visulaizing Training set Result:
-
-![logistic regression using gradient descent](result.png)
-
-## Result:
+import numpy as np
+data=pd.read_csv("Placement_Data.csv")
+data.head()
+data1=data.copy()
+data1.head()
+data1=data.drop(['sl_no','salary'],axis=1)
+data1
+from sklearn.preprocessing import LabelEncoder
+le=LabelEncoder()
+data1["gender"]=le.fit_transform(data1["gender"])
+data1["ssc_b"]=le.fit_transform(data1["ssc_b"])
+data1["hsc_b"]=le.fit_transform(data1["hsc_b"])
+data1["hsc_s"]=le.fit_transform(data1["hsc_s"])
+data1["degree_t"]=le.fit_transform(data1["degree_t"])
+data1["workex"]=le.fit_transform(data1["workex"])
+data1["specialisation"]=le.fit_transform(data1["specialisation"])
+data1["status"]=le.fit_transform(data1["status"])
+X=data1.iloc[:,: -1]
+Y=data1["status"]
+theta=np.random.randn(X.shape[1])
+y=Y
+def sigmoid(z):
+  return 1/(1+np.exp(-z))
+def loss(theta,X,y):
+  h=sigmoid(X.dot(theta))
+  return -np.sum(y*np.log(h)+ (1-y) * np.log(1-h))
+def gradient_descent(theta,X,y,alpha,num_iterations):
+  m=len(y)
+  for i in range(num_iterations):
+    h=sigmoid(X.dot(theta))
+    gradient=X.T.dot(h-y)/m
+    theta-=alpha*gradient
+  return theta
+theta=gradient_descent(theta,X,y,alpha=0.01,num_iterations=1000)
+def predict(theta,X):
+  h=sigmoid(X.dot(theta))
+  y_pred=np.where(h>=0.5 , 1,0)
+  return y_pred
+y_pred=predict(theta,X)
+accuracy=np.mean(y_pred.flatten()==y)
+print("Accuracy:",accuracy)
+print("Predicted:\n",y_pred)
+print("Actual:\n",y.values)
+xnew=np.array([[0,87,0,95,0,2,78,2,0,0,1,0]])
+y_prednew=predict(theta,xnew)
+print("Predicted Result:",y_prednew)
+```
+### Output:
+### ACCURACY,ACTUAL AND PREDICTED VALUES:
+![image](https://github.com/gpavana/-Implementation-of-Logistic-Regression-Using-Gradient-Descent/assets/118787343/95ce615b-0495-4f4c-82ae-68f40c0f2c9f)
+### PREDICTED RESULT:
+![image](https://github.com/gpavana/-Implementation-of-Logistic-Regression-Using-Gradient-Descent/assets/118787343/3a9e0840-5f33-4a62-b1b0-6fc52d5e86e7)
+### Result:
 Thus the program to implement the the Logistic Regression Using Gradient Descent is written and verified using python programming.
+
